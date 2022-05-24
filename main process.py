@@ -1,5 +1,6 @@
 from collections import defaultdict
 import random
+import time
 import pandas as pd
 import csv
 import numpy as np
@@ -63,7 +64,7 @@ class WindowsScatter:
                         elif item_num > 3:
                             self.second_rules_fail += 1
                         elif music_num > 1:
-                            print(video_dict)
+                            #print(video_dict)
                             self.third_rules_fail += 1
                         return
                     # 如果搜索完后面的序列没有一个满足的，记录本次
@@ -130,6 +131,7 @@ data_video = {0: ['creator_id211', 'item_id5', 'music_id5'],
               18: ['creator_id245', 'item_id27', 'music_id47'],
               19: ['creator_id558', 'item_id2', 'music_id93']}
 
+time_start = time.time()
 my_scatter = WindowsScatter()
 
 #raw_video_list = pd.read_csv('video_list.csv', header=None, index_col=0, squeeze=False).T.to_dict()
@@ -142,7 +144,8 @@ for i in range(1, 10001):
     ans = my_scatter.scatter(data)
     #print(ans)
 my_scatter.printnum()
-
+time_end = time.time()
+print("use time:", (time_end - time_start))
 
 '''print(data_video)
 ans = my_scatter.scatter(data_video)
