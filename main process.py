@@ -1,6 +1,7 @@
 from collections import defaultdict
 import random
 import pandas as pd
+import csv
 import numpy as np
 
 
@@ -12,7 +13,7 @@ class WindowsScatter:
         self.third_rules_fail = 0
 
     @staticmethod
-    def data_create():
+    def data_create(num):
         creator_id = []
         item_id = []
         music_id = []
@@ -26,11 +27,12 @@ class WindowsScatter:
         random.shuffle(item_id)
         random.shuffle(music_id)
         video_list = {}
-        for j in range(20):
+
+        for j in range(num * 20):
             video_list[j] = [creator_id[random.randint(0, 999)], item_id[random.randint(0, 29)],
                              music_id[random.randint(0, 99)]]
-        # video_list_frame = pd.DataFrame(video_list)
-        # video_list_frame.to_csv('video_list.csv')
+        #video_list_frame = pd.DataFrame(video_list).T
+        #video_list_frame.to_csv('video_list.csv')
         return video_list
 
     def scatter(self, video_dict):
@@ -61,10 +63,11 @@ class WindowsScatter:
                         elif item_num > 3:
                             self.second_rules_fail += 1
                         elif music_num > 1:
+                            print(video_dict)
                             self.third_rules_fail += 1
-                        return video_dict
+                        return
                     # 如果搜索完后面的序列没有一个满足的，记录本次
-                    if end + i >= 20:
+                    elif end + i >= 20:
                         self.all_rules_fail += 1
                         if prod_num > 2:
                             self.first_rules_fail += 1
@@ -72,7 +75,7 @@ class WindowsScatter:
                             self.second_rules_fail += 1
                         elif music_num > 1:
                             self.third_rules_fail += 1
-                        return video_dict
+                        return
                     # 将字典中记录的先还原
                     map1[video_dict[pointer + begin][0]] -= 1  # 作者id记录
                     map2[video_dict[pointer + begin][1]] -= 1  # 类别id记录
@@ -105,40 +108,36 @@ class WindowsScatter:
         print("third_fail_num:", self.third_rules_fail, "fail_rate:", self.third_rules_fail / 10000)
 
 
-data_video = {0: ['creator_id707', 'item_id5', 'music_id17'],
- 1: ['creator_id707', 'item_id5', 'music_id88'],
- 2: ['creator_id939', 'item_id19', 'music_id1'],
- 3: ['creator_id975', 'item_id19', 'music_id72'],
- 4: ['creator_id420', 'item_id18', 'music_id7'],
- 5: ['creator_id540', 'item_id26', 'music_id86'],
- 6: ['creator_id949', 'item_id3', 'music_id5'],
- 7: ['creator_id114', 'item_id23', 'music_id69'],
- 8: ['creator_id813', 'item_id8', 'music_id29'],
- 9: ['creator_id691', 'item_id10', 'music_id10'],
- 10: ['creator_id987', 'item_id11', 'music_id7'],
- 11: ['creator_id540', 'item_id9', 'music_id67'],
- 12: ['creator_id686', 'item_id27', 'music_id17'],
- 13: ['creator_id16', 'item_id1', 'music_id30'],
- 14: ['creator_id837', 'item_id26', 'music_id7'],
- 15: ['creator_id180', 'item_id21', 'music_id74'],
- 16: ['creator_id618', 'item_id25', 'music_id75'],
- 17: ['creator_id357', 'item_id15', 'music_id22'],
- 18: ['creator_id610', 'item_id3', 'music_id94'],
- 19: ['creator_id280', 'item_id9', 'music_id79']}
+# 调试用列表
+data_video = {0: ['creator_id211', 'item_id5', 'music_id5'], 1: ['creator_id389', 'item_id27', 'music_id44'], 2: ['creator_id233', 'item_id27', 'music_id36'], 3: ['creator_id996', 'item_id19', 'music_id3'], 4: ['creator_id845', 'item_id25', 'music_id78'], 5: ['creator_id488', 'item_id20', 'music_id33'], 6: ['creator_id738', 'item_id20', 'music_id38'], 7: ['creator_id883', 'item_id17', 'music_id11'], 8: ['creator_id190', 'item_id16', 'music_id5'], 9: ['creator_id940', 'item_id6', 'music_id23'], 10: ['creator_id678', 'item_id5', 'music_id29'], 11: ['creator_id264', 'item_id12', 'music_id3'], 12: ['creator_id657', 'item_id17', 'music_id21'], 13: ['creator_id705', 'item_id12', 'music_id14'], 14: ['creator_id269', 'item_id8', 'music_id88'], 15: ['creator_id444', 'item_id9', 'music_id26'], 16: ['creator_id236', 'item_id15', 'music_id15'], 17: ['creator_id801', 'item_id30', 'music_id93'], 18: ['creator_id245', 'item_id27', 'music_id47'], 19: ['creator_id558', 'item_id2', 'music_id93']}
+
 my_scatter = WindowsScatter()
-for i in range(1, 10001):
+
+#raw_video_list = pd.read_csv('video_list.csv', header=None, index_col=0, squeeze=False).T.to_dict()
+#print(raw_video_list)
+'''for i in range(1, 10001):
     if i % 1000 == 0:
         print("process_num:", i)
-    data = my_scatter.data_create()
+    data = my_scatter.data_create(1)
     #print(data)
     ans = my_scatter.scatter(data)
     #print(ans)
-my_scatter.printnum()
+my_scatter.printnum()'''
 
 
-'''print(data_video)
+print(data_video)
 ans = my_scatter.scatter(data_video)
 #print(ans)
 my_scatter.printnum()
-'''
+
+'''if __name__ == "__main__":
+    ans = 1
+    list1 = []
+    for i in range(20):
+        ans = ans * (100-i)
+        list1.append(100 - i)
+    #ans = ans * 19
+    ans = ans / (100 ** 20)
+    print(ans)
+    print(list1)'''
 
