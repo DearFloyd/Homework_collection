@@ -109,26 +109,45 @@ class WindowsScatter:
 
 
 # 调试用列表
-data_video = {0: ['creator_id211', 'item_id5', 'music_id5'], 1: ['creator_id389', 'item_id27', 'music_id44'], 2: ['creator_id233', 'item_id27', 'music_id36'], 3: ['creator_id996', 'item_id19', 'music_id3'], 4: ['creator_id845', 'item_id25', 'music_id78'], 5: ['creator_id488', 'item_id20', 'music_id33'], 6: ['creator_id738', 'item_id20', 'music_id38'], 7: ['creator_id883', 'item_id17', 'music_id11'], 8: ['creator_id190', 'item_id16', 'music_id5'], 9: ['creator_id940', 'item_id6', 'music_id23'], 10: ['creator_id678', 'item_id5', 'music_id29'], 11: ['creator_id264', 'item_id12', 'music_id3'], 12: ['creator_id657', 'item_id17', 'music_id21'], 13: ['creator_id705', 'item_id12', 'music_id14'], 14: ['creator_id269', 'item_id8', 'music_id88'], 15: ['creator_id444', 'item_id9', 'music_id26'], 16: ['creator_id236', 'item_id15', 'music_id15'], 17: ['creator_id801', 'item_id30', 'music_id93'], 18: ['creator_id245', 'item_id27', 'music_id47'], 19: ['creator_id558', 'item_id2', 'music_id93']}
+data_video = {0: ['creator_id211', 'item_id5', 'music_id5'],
+              1: ['creator_id389', 'item_id27', 'music_id44'],
+              2: ['creator_id233', 'item_id27', 'music_id36'],
+              3: ['creator_id996', 'item_id19', 'music_id3'],
+              4: ['creator_id845', 'item_id25', 'music_id78'],
+              5: ['creator_id488', 'item_id20', 'music_id33'],
+              6: ['creator_id738', 'item_id20', 'music_id38'],
+              7: ['creator_id883', 'item_id17', 'music_id11'],
+              8: ['creator_id190', 'item_id16', 'music_id5'],
+              9: ['creator_id940', 'item_id6', 'music_id23'],
+              10: ['creator_id678', 'item_id5', 'music_id29'],
+              11: ['creator_id264', 'item_id12', 'music_id3'],
+              12: ['creator_id657', 'item_id17', 'music_id21'],
+              13: ['creator_id705', 'item_id12', 'music_id14'],
+              14: ['creator_id269', 'item_id8', 'music_id88'],
+              15: ['creator_id444', 'item_id9', 'music_id26'],
+              16: ['creator_id236', 'item_id15', 'music_id15'],
+              17: ['creator_id801', 'item_id30', 'music_id93'],
+              18: ['creator_id245', 'item_id27', 'music_id47'],
+              19: ['creator_id558', 'item_id2', 'music_id93']}
 
 my_scatter = WindowsScatter()
 
 #raw_video_list = pd.read_csv('video_list.csv', header=None, index_col=0, squeeze=False).T.to_dict()
 #print(raw_video_list)
-'''for i in range(1, 10001):
+for i in range(1, 10001):
     if i % 1000 == 0:
         print("process_num:", i)
     data = my_scatter.data_create(1)
     #print(data)
     ans = my_scatter.scatter(data)
     #print(ans)
-my_scatter.printnum()'''
+my_scatter.printnum()
 
 
-print(data_video)
+'''print(data_video)
 ans = my_scatter.scatter(data_video)
 #print(ans)
-my_scatter.printnum()
+my_scatter.printnum()'''
 
 '''if __name__ == "__main__":
     ans = 1
