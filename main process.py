@@ -280,3 +280,4 @@ if __name__ == "__main__":
     time_end = time.time()
     print("use time:", (time_end - time_start))
 
+# 首先获取将被推荐给用户但未经过打散的视频序列,经由打散之后,heng'liang
