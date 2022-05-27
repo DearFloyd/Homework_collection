@@ -2,7 +2,6 @@ from collections import defaultdict
 import random
 import time
 import pandas as pd
-import csv
 import numpy as np
 
 
@@ -236,6 +235,7 @@ class WindowsScatter:
         print("third_fail_num:", self.third_rules_fail, "fail_rate:", self.third_rules_fail / 10000)
 
 
+'''
 # 调试用列表
 data_video = {0: ['creator_id211', 'item_id5', 'music_id5'],
               1: ['creator_id389', 'item_id27', 'music_id44'],
@@ -257,36 +257,26 @@ data_video = {0: ['creator_id211', 'item_id5', 'music_id5'],
               17: ['creator_id801', 'item_id30', 'music_id93'],
               18: ['creator_id245', 'item_id27', 'music_id47'],
               19: ['creator_id558', 'item_id2', 'music_id93']}
-
-my_scatter = WindowsScatter()
-
-total_video_list = []
-# 生产10000个视频序列
-for _ in range(10000):
-    total_video_list.append(my_scatter.data_create(1))
-
-time_start = time.time()
-for i in range(10000):
-    if (i+1) % 1000 == 0:
-        print("process_num:", i+1)
-    my_scatter.scatter_v1_0_0(total_video_list[i])
-my_scatter.printnum()
-time_end = time.time()
-print("use time:", (time_end - time_start))
-
-'''print(data_video)
+print(data_video)
 ans = my_scatter.scatter_v2_0_0(data_video)
 print(ans)
 my_scatter.printnum()'''
 
-'''if __name__ == "__main__":
-    ans = 1
-    list1 = []
-    for i in range(20):
-        ans = ans * (100-i)
-        list1.append(100 - i)
-    #ans = ans * 19
-    ans = ans / (100 ** 20)
-    print(ans)
-    print(list1)'''
+if __name__ == "__main__":
+    # 初始化对象
+    my_scatter = WindowsScatter()
+
+    total_video_list = []
+    # 生产10000个长度为20的视频序列
+    for _ in range(10000):
+        total_video_list.append(my_scatter.data_create(1))
+
+    time_start = time.time()
+    for i in range(10000):
+        if (i + 1) % 1000 == 0:
+            print("process_num:", i + 1)
+        my_scatter.scatter_v1_0_0(total_video_list[i])
+    my_scatter.printnum()
+    time_end = time.time()
+    print("use time:", (time_end - time_start))
 
