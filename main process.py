@@ -1,3 +1,11 @@
+"""
+----------------
+author:Joey
+date:2022.5.27
+function:Use rolling window to scatter video sequences according to features
+----------------
+"""
+
 from collections import defaultdict
 import random
 import time
@@ -5,48 +13,49 @@ import pandas as pd
 import numpy as np
 
 
+# 随机生成长度为num的视频序列,包含三个特征
+def data_create(num):
+    creator_id = []
+    item_id = []
+    music_id = []
+    for i in range(1, 1001):
+        creator_id.append("creator_id" + str(i))
+    for i in range(1, 31):
+        item_id.append("item_id" + str(i))
+    for i in range(1, 101):
+        music_id.append("music_id" + str(i))
+    random.shuffle(creator_id)
+    random.shuffle(item_id)
+    random.shuffle(music_id)
+    video_list = {}
+    for j in range(num):
+        video_list[j] = [creator_id[random.randint(0, 999)], item_id[random.randint(0, 29)],
+                         music_id[random.randint(0, 99)]]
+    return video_list
+
+
 class WindowsScatter:
-    def __init__(self):
+    def __init__(self, video_dict, windows_len):
+        # 滚动窗口的长度
+        self.windows_len = windows_len
+        # 一个视频序列的长度
+        self.video_dict_len = len(video_dict)
         # 打散各项规则失败次数记录
         self.all_rules_fail = 0
         self.first_rules_fail = 0
         self.second_rules_fail = 0
         self.third_rules_fail = 0
 
-    @staticmethod
-    def data_create(num):
-        creator_id = []
-        item_id = []
-        music_id = []
-        for i in range(1, 1001):
-            creator_id.append("creator_id" + str(i))
-        for i in range(1, 31):
-            item_id.append("item_id" + str(i))
-        for i in range(1, 101):
-            music_id.append("music_id" + str(i))
-        random.shuffle(creator_id)
-        random.shuffle(item_id)
-        random.shuffle(music_id)
-        video_list = {}
-
-        for j in range(num * 20):
-            video_list[j] = [creator_id[random.randint(0, 999)], item_id[random.randint(0, 29)],
-                             music_id[random.randint(0, 99)]]
-        #video_list_frame = pd.DataFrame(video_list).T
-        #video_list_frame.to_csv('video_list.csv')
-        return video_list
-
     def positive_order_scatter(self, video_dict):
         # 在长度为8窗口范围内搜索
-        win_len = 8
-        begin, end = 0, 7
+        begin, end = 0, self.windows_len - 1
         # 定义三个字典 用于记录视频特征出现次数，分别为：作者，类别，音乐
         map1, map2, map3 = defaultdict(int), defaultdict(int), defaultdict(int)
         # 这个i用于当窗口不符合要求时，连续向窗口最右端搜索的指针
         i = 1
-        while end < 20:
+        while end < len(video_dict):
             # 定义一个指针 从窗口最左端开始逐个记录
-            for pointer in range(win_len):
+            for pointer in range(self.windows_len):
                 map1[video_dict[pointer + begin][0]] += 1  # 作者id记录
                 map2[video_dict[pointer + begin][1]] += 1  # 类别id记录
                 map3[video_dict[pointer + begin][2]] += 1  # 音乐id记录
@@ -57,7 +66,7 @@ class WindowsScatter:
                 # 若三项中的某一个项最大值超过规定
                 while prod_num > 2 or item_num > 3 or music_num > 1:
                     # 右端窗口已经到达队列末尾还出现不符合的情况，必定不可能再满足要求了
-                    if end == 19:
+                    if end == self.video_dict_len - 1:
                         self.all_rules_fail += 1
                         if prod_num > 2:
                             self.first_rules_fail += 1
@@ -68,7 +77,7 @@ class WindowsScatter:
                             self.third_rules_fail += 1
                         return
                     # 如果搜索完后面的序列没有一个满足的，记录本次
-                    elif end + i >= 20:
+                    elif end + i > self.video_dict_len - 1:
                         self.all_rules_fail += 1
                         if prod_num > 2:
                             self.first_rules_fail += 1
@@ -104,15 +113,14 @@ class WindowsScatter:
 
     def reverse_order_scatter(self, video_dict):
         # 在长度为8窗口范围内搜索,倒序，从序列末尾开始，窗口反向，右端为头，左端为尾
-        win_len = 8
-        begin, end = 19, 12
+        begin, end = self.video_dict_len - 1, self.video_dict_len - self.windows_len
         # 定义三个字典 用于记录视频特征出现次数，分别为：作者，类别，音乐
         map1, map2, map3 = defaultdict(int), defaultdict(int), defaultdict(int)
         # 这个i用于当窗口不符合要求时，连续向窗口最左端搜索的指针
         i = 1
         while end >= 0:
             # 定义一个指针 从窗口最左端开始逐个记录
-            for pointer in range(win_len):
+            for pointer in range(self.windows_len):
                 map1[video_dict[begin - pointer][0]] += 1  # 作者id记录
                 map2[video_dict[begin - pointer][1]] += 1  # 类别id记录
                 map3[video_dict[begin - pointer][2]] += 1  # 音乐id记录
@@ -176,15 +184,14 @@ class WindowsScatter:
     # v2.0.0算法，当一次正序打散失败，则对那次正序打散失败后的序列做倒序处理，进行一次倒序打散
     def scatter_v2_0_0(self, video_dict):
         # 在长度为8窗口范围内搜索
-        win_len = 8
-        begin, end = 0, 7
+        begin, end = 0, self.windows_len - 1
         # 定义三个字典 用于记录视频特征出现次数，分别为：作者，类别，音乐
         map1, map2, map3 = defaultdict(int), defaultdict(int), defaultdict(int)
         # 这个i用于当窗口不符合要求时，连续向窗口最右端搜索的指针
         i = 1
-        while end < 20:
+        while end < self.video_dict_len:
             # 定义一个指针 从窗口最左端开始逐个记录
-            for pointer in range(win_len):
+            for pointer in range(self.windows_len):
                 map1[video_dict[pointer + begin][0]] += 1  # 作者id记录
                 map2[video_dict[pointer + begin][1]] += 1  # 类别id记录
                 map3[video_dict[pointer + begin][2]] += 1  # 音乐id记录
@@ -195,11 +202,11 @@ class WindowsScatter:
                 # 若三项中的某一个项最大值超过规定
                 while prod_num > 2 or item_num > 3 or music_num > 1:
 
-                    if end == 19:
+                    if end == self.video_dict_len - 1:
                         # 正序打散失败，进行倒序打散
                         self.reverse_order_scatter(video_dict)
                         return video_dict
-                    elif end + i >= 20:
+                    elif end + i > self.video_dict_len - 1:
                         # 正序打散失败，进行倒序打散
                         self.reverse_order_scatter(video_dict)
                         return video_dict
@@ -263,21 +270,21 @@ print(ans)
 my_scatter.printnum()'''
 
 if __name__ == "__main__":
-    # 初始化对象
-    my_scatter = WindowsScatter()
-
+    # 生产10000个的视频序列
     total_video_list = []
-    # 生产10000个长度为20的视频序列
     for _ in range(10000):
-        total_video_list.append(my_scatter.data_create(1))
+        # 自定义序列长度
+        total_video_list.append(data_create(20))
+
+    # 初始化对象,传入第一个序列是为了获取每个视频序列的长度
+    my_scatter = WindowsScatter(total_video_list[0], 4)
 
     time_start = time.time()
     for i in range(10000):
         if (i + 1) % 1000 == 0:
             print("process_num:", i + 1)
-        my_scatter.scatter_v1_0_0(total_video_list[i])
+        my_scatter.scatter_v2_0_0(total_video_list[i])
     my_scatter.printnum()
     time_end = time.time()
     print("use time:", (time_end - time_start))
 
-# 首先获取将被推荐给用户但未经过打散的视频序列,经由打散之后,heng'liang
