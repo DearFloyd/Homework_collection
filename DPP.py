@@ -89,7 +89,10 @@ if __name__ == "__main__":
         'epsilon': 0.01
     }
     dpp_model = DPPModel(**kwargs)
-    dpp_model.build_kernel_matrix()
+
     #dpp_model.dpp_beam()
-    print(dpp_model.dpp())
+    for i in range(8):
+        dpp_model.build_kernel_matrix()
+        print(dpp_model.dpp())  # 生成八个打散后的视频以及对应概率
+
 
